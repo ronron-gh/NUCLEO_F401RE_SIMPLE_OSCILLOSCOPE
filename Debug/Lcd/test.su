@@ -1,0 +1,8 @@
+test.c:69:13:delay_ms	16	static
+test.c:81:6:DrawTestPage	32	static
+test.c:102:6:main_test	24	static
+test.c:120:6:Test_Color	24	static
+test.c:143:6:Test_FillRec	32	static
+test.c:173:6:Test_Circle	24	static
+test.c:194:6:English_Font_test	24	static
+test.c:216:6:Test_Triangle	40	static

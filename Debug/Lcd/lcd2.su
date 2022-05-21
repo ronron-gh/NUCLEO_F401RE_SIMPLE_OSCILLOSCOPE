@@ -1,0 +1,4 @@
+lcd2.c:47:6:LCD_Clear2	16	static
+lcd2.c:62:6:LCD_DrawLine2	64	static
+lcd2.c:106:6:LCD_DrawPoint2	16	static
+lcd2.c:113:6:LCD_SendBuffer	40	static
