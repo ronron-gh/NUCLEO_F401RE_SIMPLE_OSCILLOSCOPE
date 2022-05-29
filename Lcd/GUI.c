@@ -503,7 +503,7 @@ void LCD_ShowNum(u16 x,u16 y,u32 num,u8 len,u8 size)
 	}
 } 
 
-
+#if 0
 /*****************************************************************************
  * @name       :void GUI_DrawFont16(u16 x, u16 y, u16 fc, u16 bc, u8 *s,u8 mode)
  * @date       :2018-08-09 
@@ -673,7 +673,7 @@ void GUI_DrawFont32(u16 x, u16 y, u16 fc, u16 bc, u8 *s,u8 mode)
 	
 	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);//�ָ�����Ϊȫ��  
 } 
-
+#endif
 
 /*****************************************************************************
  * @name       :void Show_Str(u16 x, u16 y, u16 fc, u16 bc, u8 *str,u8 size,u8 mode)

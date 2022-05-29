@@ -12,9 +12,6 @@ GUI.c:396:6:LCD_ShowChar	32	static
 GUI.c:448:6:LCD_ShowString	48	static
 GUI.c:468:5:mypow	24	static
 GUI.c:486:6:LCD_ShowNum	56	static
-GUI.c:519:6:GUI_DrawFont16	32	static
-GUI.c:578:6:GUI_DrawFont24	32	static
-GUI.c:634:6:GUI_DrawFont32	32	static
 GUI.c:691:6:Show_Str	48	static
 GUI.c:758:6:Gui_StrCenter	48	static
 GUI.c:774:6:Gui_Drawbmp16	24	static

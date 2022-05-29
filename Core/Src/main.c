@@ -128,56 +128,31 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-  hadc1.Instance->CR1 &=  ~(ADC_CR1_AWDIE);
+  // Note: Modify the auto-generated code to call MX_DMA_Init() before MX_SPI1_Init() in order to use DMA in SPI1
+
+  //hadc1.Instance->CR1 &=  ~(ADC_CR1_AWDIE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   LCD_Init();
 
-#if 0
-  float w = 2 * 3.141592 / 0.1;
-  for(int i=0; i<100; i++){
-	  data[i] = sin(w * 0.001 * i) + 1.5;
-  }
-  drawGraph(data, 100);
-#endif
-
-  //HAL_ADC_Start_DMA(&hadc1, adc_dr_dma, 5);
   HAL_ADC_Start_DMA(&hadc1, adc_dr_dma, ADC_BUF_SIZE);
 
-  //10kHzのPWM  @PCLK2(84MHz)
+  // Output 10kHz PWM signal from PB10 (CN9/D6) pin as test signal  @PCLK2(84MHz)
   HAL_TIM_OC_Start(&htim2, TIM_CHANNEL_3);
 
-  //サンプリングRate(MAX) = PCLK2(84MHz) / 4div / 15サイクル(12bit ADCの変換時間) = 1.4MHz
-  //とりあえず200kHzで1ms(200点)サンプリング  @PCLK2(84MHz)
+  // Start 200kHz timer for sampling  @PCLK2(84MHz)
+  // ( Sampling rate (MAX) = PCLK2(84MHz) / 4div / 15cycle(12bit ADC conversion time) = 1.4MHz )
   HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_1);
-
-  //drawGraph(NULL, 0, 0);
 
   while (1)
   {
-	  HAL_Delay(100);
-	  //if(g_is_trig_stop == FALSE){
-	  	  //htim3.Instance->CR1 &= ~(TIM_CR1_CEN);
-		  showAdcData(hdma_adc1.Instance->NDTR, SHOW_SIZE);
-	  //}
-
-#if 0
-	  //HAL_ADC_Start_DMA(&hadc1, adc_dr_dma, 200);
-
-	  HAL_Delay(1000);
-	  //HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-	  for(int i=0; i<ADC_BUF_SIZE; i++){
-		  adc_phy[i] = adc_dr_dma[i] * 3.3 / 4096;
-	  }
-	  drawGraph(adc_phy, ADC_BUF_SIZE, 0.005);
-
-#endif
+    HAL_Delay(100);
+    showAdcData(hdma_adc1.Instance->NDTR, SHOW_SIZE);
 
 
-#if 0
+#if 0	// ADC test
 	  HAL_ADC_Start(&hadc1);
 	  HAL_ADC_PollForConversion(&hadc1, 1000);
 	  adc_dr = HAL_ADC_GetValue(&hadc1);
@@ -185,7 +160,7 @@ int main(void)
 	  printf("adc result: %ld\n", adc_dr);
 #endif
 
-#if 0
+#if 0	// LCD test
 	  //main_test();
 	  	Test_Color();
 		Test_FillRec();
@@ -364,7 +339,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 8800;
+  htim2.Init.Period = 8400;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
@@ -378,7 +353,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 4400;
+  sConfigOC.Pulse = 4200;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
@@ -413,7 +388,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 440;
+  htim3.Init.Period = 420;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
@@ -427,7 +402,7 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 220;
+  sConfigOC.Pulse = 210;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -626,31 +601,6 @@ int _write(int file, char *ptr, int len)
 #define PX_PER_TIME	(DIV_PX / DIV_TIME)
 #define PY_PER_VOLT	(DIV_PY / DIV_VOLT)
 
-#if 0
-void LCD_Clear_black(void)
-{
-	  volatile unsigned int i, m;
-
-	  LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
-
-	  LCD_CS_CLR;
-	  LCD_RS_SET;
-
-	  for(i=0; i<4; i++){
-		  HAL_SPI_Transmit_DMA(&hspi1, &lcd_buf_black[i * 38400], LCD_BUF_SIZE / 4);
-
-		  while(1){
-
-			  if(HAL_OK == HAL_DMA_PollForTransfer(&hdma_spi1_tx, HAL_DMA_FULL_TRANSFER, 1000)){
-				  hspi1.State = HAL_SPI_STATE_READY;
-				  break;
-			  }
-		  }
-	  }
-
-	  LCD_CS_SET;
-}
-#endif
 
 void drawGraph(float *data, int32_t len, float dt)
 {
@@ -660,11 +610,11 @@ void drawGraph(float *data, int32_t len, float dt)
 	uint16_t color_idx;
 
 
-	LCD_Clear2(1);
+	LCD_Clear2(1);		// BLACK
 
 	// Draw graph area window
 	//POINT_COLOR = WHITE;
-	color_idx = 0;
+	color_idx = 0;		// WHITE
 
 	LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX, ORIGIN_PY, color_idx);
 	LCD_DrawLine2(ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY, color_idx);
@@ -674,7 +624,7 @@ void drawGraph(float *data, int32_t len, float dt)
 
 	// Draw gridline
 	//POINT_COLOR = GRAYBLUE;
-	color_idx = 16;
+	color_idx = 16;		// GRAYBLUE
 
 	for(int i=1; i<10; i++){
 		LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY - MAX_RANGE_PY + DIV_PY * i, ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY - MAX_RANGE_PY + DIV_PY * i, color_idx);
@@ -686,35 +636,33 @@ void drawGraph(float *data, int32_t len, float dt)
 
 
 	sprintf(div_info,"%0.2f V/div   %0.2f ms/div", DIV_VOLT, DIV_TIME);
-	//Gui_StrCenter(30, 220, WHITE, BLACK, div_info, 16, 1);
+	color_idx = 0;	// WHITE
+	Gui_StrCenter2(30, 220, div_info, 16, color_idx);
 
-	if(len > 0){
-		// Draw data point
-		//POINT_COLOR = YELLOW;
-		color_idx = 10;
 
-		axis_px = PX_PER_TIME * dt * 0;
-		axis_py = PY_PER_VOLT * data[0];
-		old_px = ORIGIN_PX + axis_px;
-		old_py = ZERO_V_PY - axis_py;
+	// Draw data point
+	//POINT_COLOR = YELLOW;
+	color_idx = 10;		// YELLOW
 
-		for(int i=1; i<len; i++){
-			axis_px = PX_PER_TIME * dt * i;
-			axis_py = PY_PER_VOLT * data[i];
-			px = ORIGIN_PX + axis_px;
-			py = ZERO_V_PY - axis_py;
-			if((px <= ORIGIN_PX + MAX_RANGE_PX) && (ORIGIN_PY - MAX_RANGE_PY <= py) && (py <= ORIGIN_PY)){
-				//LCD_DrawPoint(px_x, px_y);
-				LCD_DrawLine2(old_px, old_py , px, py, color_idx);
-				old_px = px;
-				old_py = py;
+	axis_px = PX_PER_TIME * dt * 0;
+	axis_py = PY_PER_VOLT * data[0];
+	old_px = ORIGIN_PX + axis_px;
+	old_py = ZERO_V_PY - axis_py;
 
-			}
+	for(int i=1; i<len; i++){
+		axis_px = PX_PER_TIME * dt * i;
+		axis_py = PY_PER_VOLT * data[i];
+		px = ORIGIN_PX + axis_px;
+		py = ZERO_V_PY - axis_py;
+		if((px <= ORIGIN_PX + MAX_RANGE_PX) && (ORIGIN_PY - MAX_RANGE_PY <= py) && (py <= ORIGIN_PY)){
+			//LCD_DrawPoint(px_x, px_y);
+			LCD_DrawLine2(old_px, old_py , px, py, color_idx);
+			old_px = px;
+			old_py = py;
+
 		}
 	}
-	else{
-		//Gui_StrCenter(30, 120, BLACK, YELLOW, "Running", 16, 1);
-	}
+
 
 	// Draw 0V marker
 	LCD_DrawLine2(ORIGIN_PX, ZERO_V_PY, ORIGIN_PX - 8, ZERO_V_PY - 4, color_idx);
@@ -761,7 +709,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	/* Set AWDEN bits */
 	hadc1.Instance->CR1 |=  ADC_CR1_AWDIE;
 
-	/* Start timer for ADC trigger */
+	/* Start a timer for ADC trigger */
 	htim3.Instance->CR1 |= TIM_CR1_CEN;
 
 	g_is_trig_stop = FALSE;
@@ -770,9 +718,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
 {
-	trig_ndtr = hdma_adc1.Instance->NDTR;
+	//trig_ndtr = hdma_adc1.Instance->NDTR;
 
-	// 1ms(200点)後にサンプリングを停止するためのタイマ�???��?��をスター??��?��?
+	// Start a timer to stop sampling after 1 millisecond (200 point @200kHz sampling)
 	HAL_TIM_OC_Start_IT(&htim5, TIM_CHANNEL_2);
 	htim5.Instance->CR1 |= TIM_CR1_CEN;
 
@@ -788,16 +736,7 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	htim3.Instance->CR1 &= ~(TIM_CR1_CEN);
 	g_is_trig_stop = TRUE;
-	//showAdcData(hdma_adc1.Instance->NDTR, SHOW_SIZE);
 
-	//showAdcData(trig_ndtr, 50);
-
-#if 0
-	for(int i=0; i<ADC_BUF_SIZE; i++){
-		adc_phy[i] = adc_dr_dma[i] * 3.3 / 4096;
-	}
-	drawGraph(adc_phy, ADC_BUF_SIZE, 0.005);
-#endif
 }
 
 

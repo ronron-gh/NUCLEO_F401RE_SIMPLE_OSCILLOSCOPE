@@ -30,8 +30,8 @@ Lcd/GUI.o: ../Lcd/GUI.c ../Lcd/lcd.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h ../Lcd/font.h \
- ../Lcd/gui.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
+ ../Core/Inc/type.h ../Lcd/font.h ../Lcd/gui.h
 
 ../Lcd/lcd.h:
 
@@ -100,6 +100,8 @@ Lcd/GUI.o: ../Lcd/GUI.c ../Lcd/lcd.h ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
+
+../Core/Inc/type.h:
 
 ../Lcd/font.h:
 

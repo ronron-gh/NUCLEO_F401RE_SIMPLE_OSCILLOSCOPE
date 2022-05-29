@@ -31,15 +31,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "type.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-typedef uint32_t  u32;
-typedef uint16_t u16;
-typedef uint8_t  u8;
-
 extern SPI_HandleTypeDef hspi1;
 extern int32_t g_is_trig_stop;
 /* USER CODE END ET */
@@ -87,7 +83,7 @@ void Error_Handler(void);
 #define TRUE	(1)
 #define FALSE	(0)
 #define ADC_BUF_SIZE	(300)
-#define SHOW_SIZE		(250)
+#define SHOW_SIZE		(280)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
