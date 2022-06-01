@@ -1,3 +1,9 @@
+/********************************************************************
+ * MSP2807のサンプルプログラム(lcd.c, GUI.c)の改良版。
+ * 描画を高速化するために、画面全体(320x240)のRGBデータを一旦RAM上で作成してから、
+ * DMAでSPI送信データレジスタに転送する方式とした。
+ ********************************************************************/
+
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "string.h"
@@ -43,7 +49,7 @@ u16 g_color_table[] = {
 
 /*****************************************************************************
  * @name       :void LCD_Clear2(u16 color_idx)
- * @date       :2018-08-09
+ * @date       :2022-05-03
  * @function   :Full screen filled LCD screen
  * @parameters :color:Filled color
  * @retvalue   :None
@@ -116,7 +122,7 @@ void LCD_DrawPoint2(u16 x, u16 y, u16 color_idx)
 
 /*****************************************************************************
  * @name       :void LCD_ShowChar2(u16 x, u16 y, u8 num, u8 size, u16 color_idx)
- * @date       :2018-08-09
+ * @date       :2022-05-03
  * @function   :Display a single English character
  * @parameters :x:the bebinning x coordinate of the Character display position
                 y:the bebinning y coordinate of the Character display position
@@ -156,7 +162,7 @@ void LCD_ShowChar2(u16 x, u16 y, u8 num, u8 size, u16 color_idx)
 
 /*****************************************************************************
  * @name       :void Show_Str2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
- * @date       :2018-08-09
+ * @date       :2022-05-03
  * @function   :Display Chinese and English strings
  * @parameters :x:the bebinning x coordinate of the Chinese and English strings
                 y:the bebinning y coordinate of the Chinese and English strings
@@ -205,15 +211,13 @@ void Show_Str2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
 
 /*****************************************************************************
  * @name       :void Gui_StrCenter2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
- * @date       :2018-08-09
- * @function   :Centered display of English and Chinese strings
- * @parameters :x:the bebinning x coordinate of the Chinese and English strings
-                y:the bebinning y coordinate of the Chinese and English strings
-								fc:the color value of Chinese and English strings
-								bc:the background color of Chinese and English strings
-								str:the start address of the Chinese and English strings
-								size:the size of Chinese and English strings
-								mode:0-no overlying,1-overlying
+ * @date       :2022-05-03
+ * @function   :Centered display of English strings
+ * @parameters :x:the bebinning x coordinate of the English strings
+                y:the bebinning y coordinate of the English strings
+				str:the start address of the English strings
+				size:the size of English strings
+				color_idx:the color value of English strings
  * @retvalue   :None
 ******************************************************************************/
 void Gui_StrCenter2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
@@ -223,13 +227,17 @@ void Gui_StrCenter2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
 	Show_Str2(x1,y,str,size,color_idx);
 }
 
-
-void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma, TIM_HandleTypeDef *htim)
+/*****************************************************************************
+ * @name       :void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma)
+ * @date       :2022-05-03
+ * @function   :Send RGB buffer data to LCD
+ * @parameters :hspi:the SPI　handler
+                hdma:the DMA handler
+ * @retvalue   :None
+******************************************************************************/
+void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma)
 {
 	s32 i, p, ps;
-
-	//htim->Instance->CR1 &= ~(TIM_CR1_CEN);	//サンプリングを一時停止
-
 
 	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
 
@@ -264,8 +272,5 @@ void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma, TIM_Handle
 
 	LCD_CS_SET;
 
-	//if(g_is_trig_stop == FALSE){
-	//	htim->Instance->CR1 |= TIM_CR1_CEN;		//サンプリングを再開
-	//}
 }
 

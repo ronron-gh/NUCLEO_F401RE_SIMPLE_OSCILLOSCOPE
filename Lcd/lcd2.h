@@ -9,6 +9,6 @@ void LCD_ShowChar2(u16 x, u16 y, u8 num, u8 size, u16 color_idx);
 void Show_Str2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx);
 void Gui_StrCenter2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx);
 
-void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma, TIM_HandleTypeDef *htim);
+void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma);
 
 #endif // __LCD2_H__

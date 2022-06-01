@@ -97,7 +97,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   //float data[100];
-  uint32_t adc_dr;
+  //uint32_t adc_dr;
 
   /* USER CODE END 1 */
 
@@ -669,7 +669,7 @@ void drawGraph(float *data, int32_t len, float dt)
 	LCD_DrawLine2(ORIGIN_PX - 8, ZERO_V_PY - 4, ORIGIN_PX - 8, ZERO_V_PY + 4, color_idx);
 	LCD_DrawLine2(ORIGIN_PX - 8, ZERO_V_PY + 4, ORIGIN_PX, ZERO_V_PY, color_idx);
 
-	LCD_SendBuffer(&hspi1, &hdma_spi1_tx, &htim3);
+	LCD_SendBuffer(&hspi1, &hdma_spi1_tx);
 
 }
 
