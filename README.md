@@ -28,4 +28,30 @@ STM32マイコンの評価ボード **Nucleo Board STM32F401**の機能だけで
 * 開発用PC ・・・ OS: Windows10 64bit
 * 統合開発環境 ・・・ STM32CubeIDE Version:1.8.0
 
+## 3. 注意事項
+### 3.1. 自動生成コードの不具合について
+STM32CubeMXの自動生成コードのうち、main.cの以下の部分は、MX_DMA_Init()とMX_SPI1_Init()の順番を入れ替えないとSPI用のDMAがうまく動作しません。
 
+■修正前  
+  /* Initialize all configured peripherals */  
+  MX_GPIO_Init();  
+  MX_USART2_UART_Init();  
+  **MX_SPI1_Init();**  
+  **MX_DMA_Init();**  
+  MX_ADC1_Init();  
+  MX_TIM2_Init();  
+  MX_TIM3_Init();  
+  MX_TIM5_Init();  
+
+■修正後  
+  /* Initialize all configured peripherals */  
+  MX_GPIO_Init();  
+  MX_USART2_UART_Init();  
+  **MX_DMA_Init();**  
+  **MX_SPI1_Init();**  
+  MX_ADC1_Init();  
+  MX_TIM2_Init();  
+  MX_TIM3_Init();  
+  MX_TIM5_Init();  
+
+  
