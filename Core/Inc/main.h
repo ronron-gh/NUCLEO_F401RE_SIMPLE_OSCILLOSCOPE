@@ -36,8 +36,23 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+#define TRUE	(1)
+#define FALSE	(0)
+
+
+extern ADC_HandleTypeDef hadc1;
+extern DMA_HandleTypeDef hdma_adc1;
+
 extern SPI_HandleTypeDef hspi1;
-extern int32_t g_is_trig_stop;
+extern DMA_HandleTypeDef hdma_spi1_tx;
+
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim5;
+
+//extern uint32_t adc_dr_dma[ADC_BUF_SIZE];
+//extern float adc_phy[ADC_BUF_SIZE];
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -69,21 +84,33 @@ void Error_Handler(void);
 #define USART_RX_GPIO_Port GPIOA
 #define LCD_RS_Pin GPIO_PIN_7
 #define LCD_RS_GPIO_Port GPIOC
+#define T_CLK_Pin GPIO_PIN_8
+#define T_CLK_GPIO_Port GPIOA
 #define LCD_RESET_Pin GPIO_PIN_9
 #define LCD_RESET_GPIO_Port GPIOA
+#define T_DIN_Pin GPIO_PIN_10
+#define T_DIN_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define T_CS_Pin GPIO_PIN_5
+#define T_CS_GPIO_Port GPIOB
 #define SPI1_CS_Pin GPIO_PIN_6
 #define SPI1_CS_GPIO_Port GPIOB
+#define T_DO_Pin GPIO_PIN_8
+#define T_DO_GPIO_Port GPIOB
+#define T_IRQ_Pin GPIO_PIN_9
+#define T_IRQ_GPIO_Port GPIOB
+#define T_IRQ_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
-#define TRUE	(1)
-#define FALSE	(0)
-#define ADC_BUF_SIZE	(300)
-#define SHOW_SIZE		(280)
+
+
+
+
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

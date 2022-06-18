@@ -120,6 +120,51 @@ void LCD_DrawPoint2(u16 x, u16 y, u16 color_idx)
 	g_lcd_buf[y*320 + x] = color_idx;
 }
 
+
+/*****************************************************************************
+ * @name       :void LCD_DrawRectangle2(u16 x1, u16 y1, u16 x2, u16 y2)
+ * @date       :2018-08-09
+ * @function   :Draw a rectangle
+ * @parameters :x1:the bebinning x coordinate of the rectangle
+                y1:the bebinning y coordinate of the rectangle
+				x2:the ending x coordinate of the rectangle
+				y2:the ending y coordinate of the rectangle
+ * @retvalue   :None
+******************************************************************************/
+void LCD_DrawRectangle2(u16 x1, u16 y1, u16 x2, u16 y2, u16 color_idx)
+{
+	LCD_DrawLine2(x1,y1,x2,y1,color_idx);
+	LCD_DrawLine2(x1,y1,x1,y2,color_idx);
+	LCD_DrawLine2(x1,y2,x2,y2,color_idx);
+	LCD_DrawLine2(x2,y1,x2,y2,color_idx);
+}
+
+/*******************************************************************
+ * @name       :void LCD_Fill2(u16 sx,u16 sy,u16 ex,u16 ey,u16 color)
+ * @date       :2018-08-09
+ * @function   :fill the specified area
+ * @parameters :sx:the bebinning x coordinate of the specified area
+                sy:the bebinning y coordinate of the specified area
+				ex:the ending x coordinate of the specified area
+				ey:the ending y coordinate of the specified area
+				color:the filled color value
+ * @retvalue   :None
+********************************************************************/
+void LCD_Fill2(u16 sx,u16 sy,u16 ex,u16 ey,u16 color_idx)
+{
+	u16 i,j;
+
+	//memset(&g_lcd_buf[sy*320 + sx], color_idx, width * height);
+	for(i=sy; i<=ey; i++)
+	{
+		for(j=sx; j<=ex; j++){
+			g_lcd_buf[i*320 + j] = color_idx;
+		}
+	}
+
+}
+
+
 /*****************************************************************************
  * @name       :void LCD_ShowChar2(u16 x, u16 y, u8 num, u8 size, u16 color_idx)
  * @date       :2022-05-03
@@ -226,6 +271,7 @@ void Gui_StrCenter2(u16 x, u16 y, u8 *str, u8 size, u16 color_idx)
 	u16 x1=(lcddev.width-len*8)/2;
 	Show_Str2(x1,y,str,size,color_idx);
 }
+
 
 /*****************************************************************************
  * @name       :void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma)

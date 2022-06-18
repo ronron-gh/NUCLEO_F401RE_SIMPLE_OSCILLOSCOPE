@@ -27,6 +27,8 @@
 #include "lcd.h"
 #include "lcd2.h"
 #include "GUI.h"
+#include "Touch.h"
+#include "Oscillo.h"
 #include "test.h"
 /* USER CODE END Includes */
 
@@ -72,21 +74,12 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
-void drawGraph(float *data, int32_t len, float dt);
-void showAdcData(uint32_t ndtr, uint32_t offset);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint32_t adc_dr_dma[ADC_BUF_SIZE] = {0};
-float adc_phy[ADC_BUF_SIZE] = {0};
-int32_t enable_display_update = TRUE;
-int32_t trig_ndtr = 0;
-int32_t g_is_trig_stop = FALSE;
 
-#define LCD_BUF_SIZE	(320 * 240 * 2)
-//int8_t lcd_buf_black[64000] = {0};
-const int8_t lcd_buf_black[LCD_BUF_SIZE] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -96,8 +89,6 @@ const int8_t lcd_buf_black[LCD_BUF_SIZE] = {0};
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  //float data[100];
-  //uint32_t adc_dr;
 
   /* USER CODE END 1 */
 
@@ -136,28 +127,27 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   LCD_Init();
-
-  HAL_ADC_Start_DMA(&hadc1, adc_dr_dma, ADC_BUF_SIZE);
-
-  // Output 10kHz PWM signal from PB10 (CN9/D6) pin as test signal  @PCLK2(84MHz)
-  HAL_TIM_OC_Start(&htim2, TIM_CHANNEL_3);
-
-  // Start 200kHz timer for sampling  @PCLK2(84MHz)
-  // ( Sampling rate (MAX) = PCLK2(84MHz) / 4div / 15cycle(12bit ADC conversion time) = 1.4MHz )
-  HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_1);
+  TP_Init();
+  oscillo_init();
 
   while (1)
   {
+#if 1
     HAL_Delay(100);
-    showAdcData(hdma_adc1.Instance->NDTR, SHOW_SIZE);
+    oscillo_draw(current_view);
 
+#endif
 
 #if 0	// ADC test
-	  HAL_ADC_Start(&hadc1);
+    {
+      uint32_t adc_dr;
+
+      HAL_ADC_Start(&hadc1);
 	  HAL_ADC_PollForConversion(&hadc1, 1000);
 	  adc_dr = HAL_ADC_GetValue(&hadc1);
 	  //adc_phy = adc_dr * 3.3 / 4096;
 	  printf("adc result: %ld\n", adc_dr);
+    }
 #endif
 
 #if 0	// LCD test
@@ -166,6 +156,11 @@ int main(void)
 		Test_FillRec();
 		Test_Circle();
 		Test_Triangle();
+#endif
+
+#if 0
+		// Touch test
+		Touch_Test();
 #endif
     /* USER CODE END WHILE */
 
@@ -539,7 +534,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, T_CLK_Pin|T_DIN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LCD_RESET_GPIO_Port, LCD_RESET_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(T_CS_GPIO_Port, T_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
@@ -557,21 +558,36 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LCD_RS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LCD_RESET_Pin */
-  GPIO_InitStruct.Pin = LCD_RESET_Pin;
+  /*Configure GPIO pins : T_CLK_Pin LCD_RESET_Pin T_DIN_Pin */
+  GPIO_InitStruct.Pin = T_CLK_Pin|LCD_RESET_Pin|T_DIN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LCD_RESET_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI1_CS_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_Pin;
+  /*Configure GPIO pins : T_CS_Pin SPI1_CS_Pin */
+  GPIO_InitStruct.Pin = T_CS_Pin|SPI1_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : T_DO_Pin */
+  GPIO_InitStruct.Pin = T_DO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(T_DO_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : T_IRQ_Pin */
+  GPIO_InitStruct.Pin = T_IRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(T_IRQ_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
@@ -588,156 +604,6 @@ int _write(int file, char *ptr, int len)
   return len;
 }
 
-#define ORIGIN_PX (30)
-#define ORIGIN_PY (lcddev.height-30)
-#define ZERO_V_PY	(ORIGIN_PY - DIV_PY * 3)
-#define MAX_RANGE_PX	(280)
-#define MAX_RANGE_PY	(200)
-#define DIV_PX	(20)
-#define DIV_PY	(20)
-#define DIV_VOLT	(0.5)	//V
-#define DIV_TIME	(0.1)	//msec
-//#define DIV_TIME	(0.01)	//msec
-#define PX_PER_TIME	(DIV_PX / DIV_TIME)
-#define PY_PER_VOLT	(DIV_PY / DIV_VOLT)
-
-
-void drawGraph(float *data, int32_t len, float dt)
-{
-	int32_t axis_px, axis_py;
-	int32_t px, py, old_px, old_py;
-	int8_t div_info[128];
-	uint16_t color_idx;
-
-
-	LCD_Clear2(1);		// BLACK
-
-	// Draw graph area window
-	//POINT_COLOR = WHITE;
-	color_idx = 0;		// WHITE
-
-	LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX, ORIGIN_PY, color_idx);
-	LCD_DrawLine2(ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY, color_idx);
-	LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY - MAX_RANGE_PY, color_idx);
-	LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY , ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY, color_idx);
-
-
-	// Draw gridline
-	//POINT_COLOR = GRAYBLUE;
-	color_idx = 16;		// GRAYBLUE
-
-	for(int i=1; i<10; i++){
-		LCD_DrawLine2(ORIGIN_PX, ORIGIN_PY - MAX_RANGE_PY + DIV_PY * i, ORIGIN_PX + MAX_RANGE_PX, ORIGIN_PY - MAX_RANGE_PY + DIV_PY * i, color_idx);
-	}
-
-	for(int i=1; i<14; i++){
-		LCD_DrawLine2(ORIGIN_PX + DIV_PX * i, ORIGIN_PY - MAX_RANGE_PY , ORIGIN_PX + DIV_PX * i, ORIGIN_PY, color_idx);
-	}
-
-
-	sprintf(div_info,"%0.2f V/div   %0.2f ms/div", DIV_VOLT, DIV_TIME);
-	color_idx = 0;	// WHITE
-	Gui_StrCenter2(30, 220, div_info, 16, color_idx);
-
-
-	// Draw data point
-	//POINT_COLOR = YELLOW;
-	color_idx = 10;		// YELLOW
-
-	axis_px = PX_PER_TIME * dt * 0;
-	axis_py = PY_PER_VOLT * data[0];
-	old_px = ORIGIN_PX + axis_px;
-	old_py = ZERO_V_PY - axis_py;
-
-	for(int i=1; i<len; i++){
-		axis_px = PX_PER_TIME * dt * i;
-		axis_py = PY_PER_VOLT * data[i];
-		px = ORIGIN_PX + axis_px;
-		py = ZERO_V_PY - axis_py;
-		if((px <= ORIGIN_PX + MAX_RANGE_PX) && (ORIGIN_PY - MAX_RANGE_PY <= py) && (py <= ORIGIN_PY)){
-			//LCD_DrawPoint(px_x, px_y);
-			LCD_DrawLine2(old_px, old_py , px, py, color_idx);
-			old_px = px;
-			old_py = py;
-
-		}
-	}
-
-
-	// Draw 0V marker
-	LCD_DrawLine2(ORIGIN_PX, ZERO_V_PY, ORIGIN_PX - 8, ZERO_V_PY - 4, color_idx);
-	LCD_DrawLine2(ORIGIN_PX - 8, ZERO_V_PY - 4, ORIGIN_PX - 8, ZERO_V_PY + 4, color_idx);
-	LCD_DrawLine2(ORIGIN_PX - 8, ZERO_V_PY + 4, ORIGIN_PX, ZERO_V_PY, color_idx);
-
-	LCD_SendBuffer(&hspi1, &hdma_spi1_tx);
-
-}
-
-void showAdcData(uint32_t ndtr, uint32_t offset)
-{
-	int32_t start, end, idx;
-
-	start = ADC_BUF_SIZE - ndtr - offset;
-
-	if(start < 0){
-		start = ADC_BUF_SIZE + start;
-	}
-
-	end = start + SHOW_SIZE;
-
-	if(end >= ADC_BUF_SIZE){
-		end = end - ADC_BUF_SIZE;
-	}
-
-
-	for(int i=0; i<SHOW_SIZE; i++){
-		idx = start + i;
-		if(idx >= ADC_BUF_SIZE){
-			idx = idx - ADC_BUF_SIZE;
-		}
-
-		adc_phy[i] = adc_dr_dma[idx] * 3.3 / 4096;
-	}
-	drawGraph(adc_phy, SHOW_SIZE, 0.005);
-}
-
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	printf("B1 pin is pushed (main.c)\n");
-
-	/* Set AWDEN bits */
-	hadc1.Instance->CR1 |=  ADC_CR1_AWDIE;
-
-	/* Start a timer for ADC trigger */
-	htim3.Instance->CR1 |= TIM_CR1_CEN;
-
-	g_is_trig_stop = FALSE;
-
-}
-
-void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
-{
-	//trig_ndtr = hdma_adc1.Instance->NDTR;
-
-	// Start a timer to stop sampling after 1 millisecond (200 point @200kHz sampling)
-	HAL_TIM_OC_Start_IT(&htim5, TIM_CHANNEL_2);
-	htim5.Instance->CR1 |= TIM_CR1_CEN;
-
-	/* Clear AWDEN bits */
-	hadc->Instance->CR1 &=  ~(ADC_CR1_AWDIE);
-
-	//printf("Analog Watchdog (main.c)\n");
-	//printf("DMA NDT: %d\n", hdma_adc1.Instance->NDTR);
-
-}
-
-void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	htim3.Instance->CR1 &= ~(TIM_CR1_CEN);
-	g_is_trig_stop = TRUE;
-
-}
 
 
 /* USER CODE END 4 */

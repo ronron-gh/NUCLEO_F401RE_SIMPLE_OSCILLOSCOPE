@@ -56,7 +56,7 @@
 //#include "delay.h"
 #include "gui.h"
 #include "test.h"
-//#include "touch.h"
+#include "touch.h"
 //#include "key.h"
 //#include "led.h"
 //#include "pic.h"
@@ -294,6 +294,7 @@ void Rotate_Test(void)
 	}
 	LCD_direction(USE_HORIZONTAL);
 }
+#endif
 
 /*****************************************************************************
  * @name       :void Touch_Test(void)
@@ -304,20 +305,20 @@ void Rotate_Test(void)
 ******************************************************************************/
 void Touch_Test(void)
 {
-	u8 key;
+	//u8 key;
 	u16 i=0;
 	u16 j=0;
 	u16 colorTemp=0;
 	TP_Init();
-	KEY_Init();
-	LED_Init();
+	//KEY_Init();
+	//LED_Init();
 	DrawTestPage("����9:Touch(��KEY0У׼)      ");
 	LCD_ShowString(lcddev.width-24,0,16,"RST",1);//��ʾ��������
 	POINT_COLOR=RED;
 	LCD_Fill(lcddev.width-52,2,lcddev.width-50+20,18,RED); 
-		while(1)
+	while(1)
 	{
-	 	key=KEY_Scan(1);
+	 	//key=KEY_Scan(1);
 		tp_dev.scan(0); 		 
 		if(tp_dev.sta&TP_PRES_DOWN)			//������������
 		{	
@@ -332,15 +333,16 @@ void Touch_Test(void)
 				}
 				else if((tp_dev.x>(lcddev.width-60)&&tp_dev.x<(lcddev.width-50+20))&&tp_dev.y<20)
 				{
-				LCD_Fill(lcddev.width-52,2,lcddev.width-50+20,18,ColorTab[j%5]); 
-				POINT_COLOR=ColorTab[(j++)%5];
-				colorTemp=POINT_COLOR;
-				delay_ms(10);
+					LCD_Fill(lcddev.width-52,2,lcddev.width-50+20,18,ColorTab[j%5]);
+					POINT_COLOR=ColorTab[(j++)%5];
+					colorTemp=POINT_COLOR;
+					delay_ms(10);
 				}
 
 				else TP_Draw_Big_Point(tp_dev.x,tp_dev.y,POINT_COLOR);		//��ͼ	  			   
 			}
 		}else delay_ms(10);	//û�а������µ�ʱ�� 	    
+#if 0
 		if(key==1)	//KEY_RIGHT����,��ִ��У׼����
 		{
 
@@ -359,9 +361,10 @@ void Touch_Test(void)
 			LED0=!LED0;
 			//break;
 		}
+#endif
 	}   
 }
 
 
-#endif
+
 

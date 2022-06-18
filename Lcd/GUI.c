@@ -725,6 +725,7 @@ void Show_Str(u16 x, u16 y, u16 fc, u16 bc, u8 *str,u8 size,u8 mode)
 	        }
         }else//���� 
         {   
+#if 0
 			if(x>(lcddev.width-size)||y>(lcddev.height-size)) 
 			return;  
             bHz=0;//�к��ֿ�    
@@ -737,6 +738,7 @@ void Show_Str(u16 x, u16 y, u16 fc, u16 bc, u8 *str,u8 size,u8 mode)
 				
 	        str+=2; 
 	        x+=size;//��һ������ƫ��	    
+#endif
         }						 
     }   
 }
