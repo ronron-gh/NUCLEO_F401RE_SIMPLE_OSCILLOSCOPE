@@ -54,10 +54,11 @@ STM32CubeMXの自動生成コードのうち、main.cの以下の部分は、MX_
   MX_TIM3_Init();  
   MX_TIM5_Init();  
 
-## バージョン履歴
+## 4. バージョン履歴
 **Ver.1.0.0**  
-ブログ 「[STM32マイコンで簡易オシロスコープを自作](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope)」で紹介した初期バージョン。
+ブログ「[STM32マイコンで簡易オシロスコープを自作](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope)」で紹介した初期バージョンです。
 
 **Ver.1.1.0 (最新コミット)**  
-液晶のタッチ操作により設定変更する機能を追加。  
-オシロスコープのアプリケーション部分のコードをOscillo.cに集約。
+・液晶のタッチ操作により設定変更する機能を追加。  
+・オシロスコープのアプリケーション部分のコードをOscillo.cに集約。  
+（ブログ「[STM32マイコンで簡易オシロスコープを自作 (2) タッチパネル編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-2)」で仕様やデモなどを見ることができます。）
