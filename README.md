@@ -30,7 +30,7 @@ STM32マイコンの評価ボード **Nucleo Board STM32F401**の機能だけで
 
 ## 3. 注意事項
 ### 3.1. 自動生成コードの不具合について
-STM32CubeMXの自動生成コードのうち、main.cの以下の部分は、MX_DMA_Init()とMX_SPI1_Init()の順番を入れ替えないとSPI用のDMAがうまく動作しません。
+ペリフェラルの初期設定は全てSTM32CubeMXでコードを自動生成していますが、自動生成コードのうち、main.cの以下の部分は、MX_DMA_Init()とMX_SPI1_Init()の順番を入れ替えないとSPI用のDMAがうまく動作しません。本リポジトリのコードは修正してありますが、ペリフェラル設定を変更して自動生成しなおす場合はご注意ください。
 
 ■修正前  
   /* Initialize all configured peripherals */  
