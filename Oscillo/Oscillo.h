@@ -4,6 +4,12 @@
 #define ADC_BUF_SIZE	(300)		// サンプリングのバッファサイズ（サンプル数）
 #define SHOW_SIZE		(280)		// 画面表示するサンプル数
 
+#define SAMPLING_RATE	(200)		// kHz
+#define DELTA_TIME		(1.0 / SAMPLING_RATE)		// ms
+#define ADC_RESOLUTION	(4096)		// 12bit ADC
+#define ADC_REF_V		(3.3)
+#define VOLT_DIVIDE_RATIO	(110/10)	// 100kΩと10kΩで分圧
+
 #define LCD_BUF_SIZE	(320 * 240 * 2)		// byte
 
 #define LABEL_STRLEN_MAX	(10)

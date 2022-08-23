@@ -36,6 +36,10 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+//#define TOUCH_TEST_MODE
+
+#define LCD_DIRECTION	(1)		// 0:0deg 1:90deg 2:180deg 3:270deg
+
 #define TRUE	(1)
 #define FALSE	(0)
 

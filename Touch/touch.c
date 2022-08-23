@@ -53,6 +53,7 @@
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 **************************************************************************************************/	
 #include "stm32f4xx_hal.h"
+#include "main.h"
 #include "touch.h" 
 #include "lcd.h"
 //#include "delay.h"
@@ -668,14 +669,24 @@ u8 TP_Init(void)
 #endif
 	LCD_Clear(WHITE);//����
 
-#if 0
-	//TP_Adjust();
+#ifdef TOUCH_TEST_MODE
+	TP_Adjust();
 #else
 	// 調整値をハードコーディング
+#if LCD_DIRECTION == 3
+	//画面の向きがLCD_direction(3)の場合
 	tp_dev.xfac = 0.090148;
 	tp_dev.xoff = -31;
 	tp_dev.yfac = 0.065833;
 	tp_dev.yoff = -13;
+#elif LCD_DIRECTION == 1
+	//画面の向きがLCD_direction(1)の場合
+	tp_dev.xfac = -0.089172;
+	tp_dev.xoff = 348;
+	tp_dev.yfac = -0.065445;
+	tp_dev.yoff = 250;
+#endif
+
     tp_dev.touchtype = 1;
 	if(tp_dev.touchtype)//X,Y��������Ļ�෴
 	{

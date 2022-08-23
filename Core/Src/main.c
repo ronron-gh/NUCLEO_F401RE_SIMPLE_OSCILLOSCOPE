@@ -132,7 +132,7 @@ int main(void)
 
   while (1)
   {
-#if 1
+#ifndef TOUCH_TEST_MODE
     HAL_Delay(100);
     oscillo_draw(current_view);
 
@@ -158,7 +158,7 @@ int main(void)
 		Test_Triangle();
 #endif
 
-#if 0
+#ifdef TOUCH_TEST_MODE
 		// Touch test
 		Touch_Test();
 #endif

@@ -336,8 +336,7 @@ void LCD_Init(void)
 	delay_ms(120);
 	LCD_WR_REG(0x29); //display on		
 
-  //LCD_direction(USE_HORIZONTAL);//����LCD��ʾ����
-  LCD_direction(3);//����LCD��ʾ����
+	LCD_direction(LCD_DIRECTION);//����LCD��ʾ����
 //	LCD_LED=1;//��������
 	LCD_Clear(WHITE);//��ȫ����ɫ
 }

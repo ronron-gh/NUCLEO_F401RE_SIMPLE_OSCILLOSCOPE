@@ -309,7 +309,7 @@ void Touch_Test(void)
 	u16 i=0;
 	u16 j=0;
 	u16 colorTemp=0;
-	TP_Init();
+	//TP_Init();	//mainで呼んでいる
 	//KEY_Init();
 	//LED_Init();
 	DrawTestPage("����9:Touch(��KEY0У׼)      ");

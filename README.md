@@ -55,10 +55,20 @@ STM32マイコンの評価ボード **Nucleo Board STM32F401**の機能だけで
   MX_TIM5_Init();  
 
 ## 4. バージョン履歴
+古いバージョンはtagとしてダウンロードできます。
+
 **Ver.1.0.0**  
 ブログ「[STM32マイコンで簡易オシロスコープを自作](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope)」で紹介した初期バージョンです。
 
-**Ver.1.1.0 (最新コミット)**  
+**Ver.1.1.0**  
 ・液晶のタッチ操作により設定変更する機能を追加。  
-・オシロスコープのアプリケーション部分のコードをOscillo.cに集約。  
 （ブログ「[STM32マイコンで簡易オシロスコープを自作 (2) タッチパネル編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-2)」で仕様やデモなどを見ることができます。）
+
+・オシロスコープのアプリケーション部分のコードをOscillo.cに集約。  
+
+**Ver.1.2.0（最新コミット）**  
+・ブログ「[STM32マイコンで簡易オシロスコープを自作 (3) ハードウェア編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-3)」で入力電圧を分圧したため、AD変換結果に分圧比を掛ける処理を追加。
+
+・#define TOUCH_TEST_MODE を有効化してビルドするとTFT液晶のテストモードを起動できるようにした。
+
+・#define LCD_DIRECTION の値を変えることで液晶表示の上下を反転できるようにした。

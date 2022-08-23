@@ -112,7 +112,7 @@ struct Label btnDivVolt2 = {170,  100,  50,     20,     13,    "1.0",      14,  
 							};
 
 						  // x1,  y1, width, height, color,    str,   ,str_size, str_color
-struct Label btnDivVolt3 = {240,  100,  50,     20,     13,    "2.0",      14,        1,
+struct Label btnDivVolt3 = {240,  100,  50,     20,     13,    "5.0",      14,        1,
 							TRUE,
 							onClickBtnDivVolt3
 							};
@@ -328,9 +328,9 @@ static void showAdcData(uint32_t ndtr, uint32_t offset)
 			idx = idx - ADC_BUF_SIZE;
 		}
 
-		adc_phy[i] = adc_dr_dma[idx] * 3.3 / 4096;
+		adc_phy[i] = adc_dr_dma[idx] * ADC_REF_V / ADC_RESOLUTION * VOLT_DIVIDE_RATIO;
 	}
-	drawGraph(adc_phy, SHOW_SIZE, 0.005);
+	drawGraph(adc_phy, SHOW_SIZE, DELTA_TIME);
 }
 
 
@@ -421,7 +421,7 @@ void onClickBtnDivVolt2(void)
 
 void onClickBtnDivVolt3(void)
 {
-	vDIV_VOLT = 2.0;
+	vDIV_VOLT = 5.0;
 	currentBtnDivVolt = &btnDivVolt3;
 }
 
@@ -503,7 +503,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 	else if(GPIO_Pin == T_IRQ_Pin){
 		printf("LCD touch interrupt (main.c)\n");
+#ifndef TOUCH_TEST_MODE
 		oscillo_touchEventHandler();
+#endif
 	}
 
 }
