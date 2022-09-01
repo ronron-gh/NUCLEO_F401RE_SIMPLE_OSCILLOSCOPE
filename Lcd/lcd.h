@@ -152,7 +152,8 @@ extern u16  BACK_COLOR; //������ɫ.Ĭ��Ϊ��ɫ
 void LCD_Init(void);
 void LCD_DisplayOn(void);
 void LCD_DisplayOff(void);
-void LCD_Clear(u16 Color);	 
+void LCD_Clear(u16 Color);
+void LCD_DrawPicture(u16* picture);
 void LCD_SetCursor(u16 Xpos, u16 Ypos);
 void LCD_DrawPoint(u16 x,u16 y);//����
 u16  LCD_ReadPoint(u16 x,u16 y); //����

@@ -11,10 +11,6 @@
 #include "lcd.h"
 #include "lcd2.h"
 
-#define LCD_BUF_SIZE	(320 * 240)
-#define LCD_SPLIT_SEND_NUM	(10)
-#define LCD_SEND_SIZE	(LCD_BUF_SIZE / LCD_SPLIT_SEND_NUM)
-
 s8 g_lcd_buf[LCD_BUF_SIZE];
 u16 g_lcd_send_buf[LCD_SEND_SIZE];
 
@@ -290,6 +286,7 @@ void LCD_SendBuffer(SPI_HandleTypeDef *hspi, DMA_HandleTypeDef *hdma)
 	LCD_CS_CLR;
 	LCD_RS_SET;
 
+	//本当は320x240のデータを一括で送信したいが、RAM不足でバッファを取れないため、分割して送信する。
 	for(i=0; i<LCD_SPLIT_SEND_NUM; i++){
 
 		ps = i * LCD_SEND_SIZE;

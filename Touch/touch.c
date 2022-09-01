@@ -667,9 +667,10 @@ u8 TP_Init(void)
 	}			
 	TP_Get_Adjdata();
 #endif
-	LCD_Clear(WHITE);//����
+
 
 #ifdef TOUCH_TEST_MODE
+	LCD_Clear(WHITE);//����
 	TP_Adjust();
 #else
 	// 調整値をハードコーディング

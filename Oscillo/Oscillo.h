@@ -10,8 +10,6 @@
 #define ADC_REF_V		(3.3)
 #define VOLT_DIVIDE_RATIO	(110/10)	// 100kΩと10kΩで分圧
 
-#define LCD_BUF_SIZE	(320 * 240 * 2)		// byte
-
 #define LABEL_STRLEN_MAX	(10)
 #define LABEL_LIST_MAX	(15)
 

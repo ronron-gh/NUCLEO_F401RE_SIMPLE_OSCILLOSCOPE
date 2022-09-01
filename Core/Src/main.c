@@ -113,20 +113,19 @@ int main(void)
   MX_USART2_UART_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
-
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-  // Note: Modify the auto-generated code to call MX_DMA_Init() before MX_SPI1_Init() in order to use DMA in SPI1
+  // !!!Note!!! Modify the auto-generated code to call MX_DMA_Init() before MX_SPI1_Init() in order to use DMA in SPI1
 
-  //hadc1.Instance->CR1 &=  ~(ADC_CR1_AWDIE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   LCD_Init();
+  HAL_Delay(3000);
   TP_Init();
   oscillo_init();
 
@@ -136,7 +135,11 @@ int main(void)
     HAL_Delay(100);
     oscillo_draw(current_view);
 
+#else
+	// Touch test
+	Touch_Test();
 #endif
+
 
 #if 0	// ADC test
     {
@@ -158,10 +161,6 @@ int main(void)
 		Test_Triangle();
 #endif
 
-#ifdef TOUCH_TEST_MODE
-		// Touch test
-		Touch_Test();
-#endif
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -252,7 +251,7 @@ static void MX_ADC1_Init(void)
   /** Configure the analog watchdog
   */
   AnalogWDGConfig.WatchdogMode = ADC_ANALOGWATCHDOG_SINGLE_REG;
-  AnalogWDGConfig.HighThreshold = 2048;
+  AnalogWDGConfig.HighThreshold = 200;
   AnalogWDGConfig.LowThreshold = 0;
   AnalogWDGConfig.Channel = ADC_CHANNEL_0;
   AnalogWDGConfig.ITMode = ENABLE;

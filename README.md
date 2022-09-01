@@ -21,7 +21,7 @@ STM32マイコンの評価ボード **Nucleo Board STM32F401**の機能だけで
 
 ※1 自分の用途では200kS/sで十分なのでそのように実装しましたが、ADCの性能的には1MS/s以上にすることも可能だと思います。
 
-※2 マイコンのADCポートに直接信号を入力しているため、<u>マイコンの電源電圧3.3Vを超える信号は入力できません</u>。本来は入力回路も適切に設計する必要がありますが、そこは追々勉強していきたいと思います...
+※2 マイコンのADCポートに直接信号を入力する場合、<u>マイコンの電源電圧3.3Vを超える信号は入力できません</u>。ブログの[パート3](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-3)で、3.3Vよりも高い電圧を入力するための入力回路を紹介しています。
 
 
 ## 2. 開発環境
@@ -58,17 +58,15 @@ STM32マイコンの評価ボード **Nucleo Board STM32F401**の機能だけで
 古いバージョンはtagとしてダウンロードできます。
 
 **Ver.1.0.0**  
-ブログ「[STM32マイコンで簡易オシロスコープを自作](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope)」で紹介した初期バージョンです。
+　ブログ「[STM32マイコンで簡易オシロスコープを自作](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope)」で紹介した初期バージョンです。
 
 **Ver.1.1.0**  
-・液晶のタッチ操作により設定変更する機能を追加。  
+* 液晶のタッチ操作により設定変更する機能を追加。  
 （ブログ「[STM32マイコンで簡易オシロスコープを自作 (2) タッチパネル編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-2)」で仕様やデモなどを見ることができます。）
-
-・オシロスコープのアプリケーション部分のコードをOscillo.cに集約。  
+* オシロスコープのアプリケーション部分のコードをOscillo.cに集約。  
 
 **Ver.1.2.0（最新コミット）**  
-・ブログ「[STM32マイコンで簡易オシロスコープを自作 (3) ハードウェア編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-3)」で入力電圧を分圧したため、AD変換結果に分圧比を掛ける処理を追加。
-
-・#define TOUCH_TEST_MODE を有効化してビルドするとTFT液晶のテストモードを起動できるようにした。
-
-・#define LCD_DIRECTION の値を変えることで液晶表示の上下を反転できるようにした。
+* ブログ「[STM32マイコンで簡易オシロスコープを自作 (3) ハードウェア編](https://mzmlab.hatenablog.com/entry/stm32-oscilloscope-3)」で入力電圧を分圧したため、AD変換結果に分圧比を掛ける処理を追加。
+* #define TOUCH_TEST_MODE を有効化してビルドするとTFT液晶のテストモードを起動できるようにした。
+* #define LCD_DIRECTION の値を変えることで液晶表示の上下を反転できるようにした。
+* 起動画面を追加　(詳細はdocフォルダ内のSW設計書を参照)。

@@ -58,6 +58,7 @@
 //#include "spi.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "startup_screen.h"
 	   
 //����LCD��Ҫ����
 //Ĭ��Ϊ����
@@ -190,6 +191,22 @@ void LCD_Clear(u16 Color)
 	}
 	 LCD_CS_SET;
 } 
+
+void LCD_DrawPicture(u16* picture)
+{
+  unsigned int i,m;
+	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
+	LCD_CS_CLR;
+	LCD_RS_SET;
+	for(i=0;i<lcddev.height;i++)
+	{
+        for(m=0;m<lcddev.width;m++)
+        {
+			Lcd_WriteData_16Bit(picture[lcddev.width * i + m]);
+		}
+	}
+	 LCD_CS_SET;
+}
 
 #if 0
 /*****************************************************************************
@@ -338,7 +355,8 @@ void LCD_Init(void)
 
 	LCD_direction(LCD_DIRECTION);//����LCD��ʾ����
 //	LCD_LED=1;//��������
-	LCD_Clear(WHITE);//��ȫ����ɫ
+//	LCD_Clear(WHITE);//��ȫ����ɫ
+	LCD_DrawPicture(g_startup_screen);
 }
  
 /*****************************************************************************
